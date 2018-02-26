@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Website.Extensions
 {
-    //public class AuthorizeClaimAttribute : IAsyncAuthorizationFilter, IFilterFactory
     public class ClaimAuthorizeAttribute : AuthorizeAttribute
     {
         //private readonly string ClaimType;

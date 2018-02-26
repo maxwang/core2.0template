@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Website.Extensions;
 using Website.Models;
 
 namespace Website.Controllers
@@ -15,6 +16,8 @@ namespace Website.Controllers
             return View();
         }
 
+        [ClaimAuthorize("CustomerPortal.Module", "eSMS")]
+        [ClaimAuthorize("CustomerPortal.Module", "eTechInternal")]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
