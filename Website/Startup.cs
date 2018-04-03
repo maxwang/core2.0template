@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.ResponseCompression;
 using PaulMiami.AspNetCore.Mvc.Recaptcha;
+using System.IO.Compression;
 
 namespace Website
 {
@@ -59,25 +60,19 @@ namespace Website
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, SMSClaimsPrincipalFactory>();
 
             //feature
-            
+
 
             //for performance
-            services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Fastest);
-
             services.AddResponseCompression(options =>
             {
                 options.EnableForHttps = true;
                 options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "image/svg+xml", "text/html", "text/plain" });
+            });
 
-                options.MimeTypes = new[] { "text/plain", "application/json", "text/html" };
-                //"text/plain",
-                //"text/css",
-                //"application/javascript",
-                //"text/html",
-                //"application/xml",
-                //"text/xml",
-                //"application/json",
-                //"text/json",
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.Fastest;
             });
 
             // Add application services.
