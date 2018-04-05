@@ -10,10 +10,11 @@ namespace Website.Extensions
     public class ClaimAuthorizePolicyProvider : IAuthorizationPolicyProvider
     {
         private readonly AuthorizationOptions _options;
+        private static object _myLock = new object();
 
         public ClaimAuthorizePolicyProvider(IOptions<AuthorizationOptions> options)
         {
-            if(options == null)
+            if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
@@ -21,14 +22,20 @@ namespace Website.Extensions
             _options = options.Value;
         }
 
-        public Task<AuthorizationPolicy> GetDefaultPolicyAsync()
+        public async Task<AuthorizationPolicy> GetDefaultPolicyAsync()
         {
-            return Task.FromResult(_options.DefaultPolicy);
+            return await Task.FromResult(_options.DefaultPolicy);
         }
 
-        public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
+        public async Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
-            AuthorizationPolicy policy = _options.GetPolicy(policyName);
+            AuthorizationPolicy policy;
+
+            lock (_myLock)
+            {
+                policy = _options.GetPolicy(policyName);
+            }
+
 
             if (policy == null && !string.IsNullOrEmpty(policyName) && policyName.IndexOf("=====") > -1)
             {
@@ -36,14 +43,17 @@ namespace Website.Extensions
                 string[] resourceValues = policyName.Split(new string[] { "=====" }, StringSplitOptions.RemoveEmptyEntries);
                 if (resourceValues.Length > 1)
                 {
-                    _options.AddPolicy(policyName, builder =>
+                    lock (_myLock)
                     {
-                        builder.RequireClaim(resourceValues[0], new string[] { resourceValues[1] });
-                    });
+                        _options.AddPolicy(policyName, builder =>
+                        {
+                            builder.RequireClaim(resourceValues[0], new string[] { resourceValues[1] });
+                        });
+                    }
                 }
             }
 
-            return Task.FromResult(_options.GetPolicy(policyName));
+            return await Task.FromResult(_options.GetPolicy(policyName));
         }
     }
 }
