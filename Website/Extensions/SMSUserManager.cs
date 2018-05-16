@@ -169,7 +169,7 @@ namespace Website.Extensions
             {
                 var uStore = Store as SMSUserStore<ApplicationUser>;
                 user.LastPasswordChangedDate = DateTime.Now;
-                
+                user.LastLoginDate = DateTime.Now;
                 uStore.Context.SaveChanges();
             }
 
