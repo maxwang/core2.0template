@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.ResponseCompression;
 using PaulMiami.AspNetCore.Mvc.Recaptcha;
 using System.IO.Compression;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Website
 {
@@ -60,7 +61,14 @@ namespace Website
             services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, SMSClaimsPrincipalFactory>();
 
             //feature
-
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            })
+            .AddCookie(options =>
+            {
+                options.SessionStore = new SMSAuthenticationSessionStore();
+            });
 
             //for performance
             services.AddResponseCompression(options =>
