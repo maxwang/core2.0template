@@ -95,7 +95,7 @@ namespace Website
         {
             if (env.IsDevelopment())
             {
-                app.UseBrowserLink();
+                //app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
@@ -105,7 +105,7 @@ namespace Website
             }
 
             app.UseStaticFiles();
-
+            app.UseCookiePolicy();
             app.UseAuthentication();
 
             app.UseMvc(routes =>
